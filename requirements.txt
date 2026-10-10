@@ -1,0 +1,13 @@
+pandas==3.0.3
+numpy==2.4.6
+lightgbm==4.7.0
+scikit-learn==1.9.0
+fastapi==0.143.0
+uvicorn==0.54.0
+pydantic==2.14.0
+matplotlib==3.11.2
+joblib==1.6.0
+pytest==9.1.1
+httpx==0.28.1
+reportlab==5.0.1
+python-pptx==1.0.2

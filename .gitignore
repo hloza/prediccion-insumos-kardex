@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.log
+*.err
+scratch*
+dom*.html
+# raw dump and intermediate extraction are not shared
+*.sql
+data/raw_movements.csv
