@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reposición de insumos</title>
+<style>
+  :root { --ink:#1d2731; --muted:#5f6b76; --line:#d9dee3; --accent:#1f6f8b; --warn:#b4531a; --bad:#b03a2e; --ok:#2e7d4f; --bg:#f6f7f8; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.45 system-ui, "Segoe UI", sans-serif; color:var(--ink); background:var(--bg); }
+  header { background:#fff; border-bottom:1px solid var(--line); padding:14px 24px; }
+  header h1 { margin:0; font-size:19px; }
+  header p { margin:2px 0 0; color:var(--muted); font-size:13px; }
+  main { display:grid; grid-template-columns: 340px 1fr; gap:18px; padding:18px 24px; max-width:1250px; }
+  section { background:#fff; border:1px solid var(--line); border-radius:8px; padding:16px; }
+  h2 { font-size:15px; margin:0 0 10px; }
+  label { display:block; font-size:13px; color:var(--muted); margin:10px 0 3px; }
+  input, select, textarea { width:100%; padding:7px 8px; border:1px solid var(--line); border-radius:5px; font:inherit; }
+  textarea { height:150px; font:12px/1.35 Consolas, monospace; }
+  .row { display:flex; gap:8px; }
+  .row > div { flex:1; }
+  button { margin-top:12px; padding:9px 12px; border:0; border-radius:5px; background:var(--accent); color:#fff; font:inherit; cursor:pointer; width:100%; }
+  button.sec { background:#e8edf0; color:var(--ink); }
+  button:disabled { opacity:.55; cursor:wait; }
+  .msg { margin-top:10px; padding:8px 10px; border-radius:5px; font-size:13px; display:none; }
+  .msg.err { display:block; background:#fbeceb; color:var(--bad); border:1px solid #f0c6c2; }
+  .msg.load { display:block; background:#eef5f8; color:var(--accent); }
+  .kpis { display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px; }
+  .kpi { border:1px solid var(--line); border-radius:6px; padding:9px; }
+  .kpi b { display:block; font-size:21px; }
+  .kpi span { font-size:12px; color:var(--muted); }
+  .alert { padding:9px 11px; border-radius:6px; margin-bottom:12px; font-weight:600; }
+  .alert.order { background:#fdf0e6; color:var(--warn); }
+  .alert.fine { background:#e8f4ec; color:var(--ok); }
+  table { border-collapse:collapse; width:100%; font-size:13px; margin-top:10px; }
+  th, td { padding:5px 6px; border-bottom:1px solid var(--line); text-align:right; }
+  th:first-child, td:first-child { text-align:left; }
+  .limits { font-size:12.5px; color:var(--muted); }
+  .limits li { margin-bottom:4px; }
+  svg text { font-size:11px; fill:var(--muted); }
+  .empty { color:var(--muted); padding:40px 0; text-align:center; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } .kpis { grid-template-columns: repeat(2,1fr);} }
+</style>
+</head>
+<body>
+<header>
+  <h1>Predicción de consumo y reposición de insumos</h1>
+  <p>Cafetería · Kardex diario · Modelo LightGBM comparado con la línea base “mismo día de la semana anterior”</p>
+</header>
+<main>
+  <div>
+    <section>
+      <h2>1. Datos de entrada</h2>
+      <label for="item">Insumo</label>
+      <select id="item"></select>
+      <div class="row">
+        <div><label for="until">Historial hasta</label><input id="until" type="date" value="2026-09-26"></div>
+        <div><label for="days">Días</label><input id="days" type="number" value="56" min="28" max="365"></div>
+      </div>
+      <button class="sec" id="load">Cargar historial del kardex</button>
+      <label for="csvfile">…o subir CSV (fecha,consumo)</label>
+      <input id="csvfile" type="file" accept=".csv,text/csv">
+      <label for="hist">Historial (fecha,consumo), un día por línea</label>
+      <textarea id="hist" placeholder="2026-09-01,4200&#10;2026-09-02,3900"></textarea>
+      <div class="row">
+        <div><label for="stock">Stock actual <span id="unit"></span></label><input id="stock" type="number" min="0" step="any"></div>
+        <div><label for="horizon">Horizonte (días)</label><input id="horizon" type="number" value="7" min="1" max="14"></div>
+        <div><label for="lead">Entrega (días)</label><input id="lead" type="number" value="2" min="0" max="14"></div>
+      </div>
+      <button id="run">Predecir y calcular reposición</button>
+      <div id="msg" class="msg"></div>
+    </section>
+    <section style="margin-top:14px">
+      <h2>Límites de la solución</h2>
+      <ul class="limits">
+        <li>Pronóstico a 1 día entrenado; de 2 a 14 días se calcula de forma recursiva y el error crece con el horizonte.</li>
+        <li>Requiere al menos 28 días consecutivos de historial (use 0 los días sin consumo).</li>
+        <li>No conoce eventos especiales, promociones ni cortes de proveedor.</li>
+        <li>El stock es el saldo de envases abiertos del kardex, no el del almacén.</li>
+        <li>En insumos de uso por lotes (harina, huevo) acierta poco el día exacto; sirve más el total semanal.</li>
+      </ul>
+    </section>
+  </div>
+  <section id="out">
+    <h2>2. Resultado</h2>
+    <div id="result"><p class="empty">Cargue un historial y presione “Predecir”.</p></div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let items = [];
+
+function showMsg(text, kind) {
+  const m = $("msg");
+  m.className = "msg " + (kind || "");
+  m.textContent = text || "";
+}
+
+async function api(path, options) {
+  const res = await fetch(path, options);
+  let body = null;
+  try { body = await res.json(); } catch (e) { /* non JSON */ }
+  if (!res.ok) {
+    let detail = body && body.detail;
+    if (Array.isArray(detail)) detail = detail.map(d => (d.loc ? d.loc.slice(1).join(".") + ": " : "") + d.msg).join(" · ");
+    throw new Error(detail || ("Error " + res.status));
+  }
+  return body;
+}
+
+async function init() {
+  try {
+    items = await api("/api/insumos");
+    $("item").innerHTML = items.map(i => `<option value="${i.nombre}">${i.nombre} (${i.unidad})</option>`).join("");
+    $("item").value = "Leche entera";
+    $("unit").textContent = "(" + currentItem().unidad + ")";
+  } catch (e) { showMsg("No se pudo conectar con el backend: " + e.message, "err"); }
+}
+const currentItem = () => items.find(i => i.nombre === $("item").value);
+$("item").onchange = () => { $("unit").textContent = "(" + currentItem().unidad + ")"; };
+
+$("load").onclick = async () => {
+  showMsg("Cargando historial…", "load");
+  try {
+    const q = new URLSearchParams({ insumo: $("item").value, dias: $("days").value, hasta: $("until").value });
+    const d = await api("/api/historial?" + q);
+    $("hist").value = d.historial.map(h => `${h.fecha},${h.consumo}`).join("\n");
+    $("stock").value = d.stock_actual;
+    showMsg("");
+  } catch (e) { showMsg(e.message, "err"); }
+};
+
+$("csvfile").onchange = async ev => {
+  const f = ev.target.files[0];
+  if (!f) return;
+  const text = await f.text();
+  $("hist").value = text.split(/\r?\n/).filter(l => l.trim() && !/^fecha/i.test(l)).join("\n");
+};
+
+function parseHistory(text) {
+  const rows = [];
+  text.split(/\r?\n/).forEach((line, i) => {
+    if (!line.trim()) return;
+    const [fecha, consumo] = line.split(/[;,\t]/).map(s => s && s.trim());
+    const value = Number(consumo);
+    if (!fecha || consumo === undefined || consumo === "" || Number.isNaN(value))
+      throw new Error(`Línea ${i + 1} inválida: “${line}”. Formato esperado: AAAA-MM-DD,cantidad`);
+    rows.push({ fecha, consumo: value });
+  });
+  return rows;
+}
+
+$("run").onclick = async () => {
+  let historial;
+  try { historial = parseHistory($("hist").value); }
+  catch (e) { showMsg(e.message, "err"); return; }
+  if ($("stock").value === "") { showMsg("Ingrese el stock actual.", "err"); return; }
+  const payload = {
+    insumo: $("item").value, historial,
+    stock_actual: Number($("stock").value),
+    horizonte: Number($("horizon").value), dias_entrega: Number($("lead").value)
+  };
+  $("run").disabled = true;
+  showMsg("Ejecutando el modelo…", "load");
+  try {
+    const r = await api("/api/predecir", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    render(r, historial);
+    showMsg("");
+  } catch (e) {
+    showMsg(e.message, "err");
+  } finally { $("run").disabled = false; }
+};
+
+const fmt = v => Number(v).toLocaleString("es-BO", { maximumFractionDigits: 1 });
+
+function render(r, hist) {
+  const p = r.reposicion, u = r.unidad;
+  const alert = p.pedir_hoy
+    ? `<div class="alert order">Pedir hoy: el stock alcanza ${p.dias_cobertura} día(s) y la entrega tarda ${$("lead").value}. Cantidad sugerida: ${fmt(p.cantidad_sugerida)} ${u}.</div>`
+    : `<div class="alert fine">${p.cubre_todo_el_horizonte ? "El stock cubre todo el horizonte." : "El stock alcanza " + p.dias_cobertura + " día(s)."} ${p.cantidad_sugerida > 0 ? "Reponer " + fmt(p.cantidad_sugerida) + " " + u + " antes del fin del horizonte." : "No hace falta reponer."}</div>`;
+  const conf = r.confiabilidad;
+  $("result").innerHTML = alert + `
+    <div class="kpis">
+      <div class="kpi"><b>${fmt(p.consumo_total_predicho)}</b><span>Consumo predicho (${u})</span></div>
+      <div class="kpi"><b>${p.dias_cobertura}${p.cubre_todo_el_horizonte ? "+" : ""}</b><span>Días de cobertura</span></div>
+      <div class="kpi"><b>${fmt(p.cantidad_sugerida)}</b><span>Cantidad sugerida (${u})</span></div>
+      <div class="kpi"><b>${conf.mase_modelo}</b><span>MASE en prueba (base ${conf.mase_linea_base})</span></div>
+    </div>
+    ${chart(hist.slice(-28), r.pronostico, u)}
+    <table><thead><tr><th>Fecha</th><th>LightGBM</th><th>Línea base</th><th>Stock estimado</th></tr></thead>
+    <tbody>${r.pronostico.map(f => `<tr><td>${f.fecha}</td><td>${fmt(f.consumo_predicho)}</td><td>${fmt(f.linea_base)}</td><td>${fmt(f.stock_estimado)}</td></tr>`).join("")}</tbody></table>
+    <p class="limits">Stock de seguridad incluido: ${fmt(p.stock_seguridad)} ${u} (nivel de servicio ~95 %, error de validación).</p>`;
+}
+
+function chart(hist, fc, unit) {
+  const W = 760, H = 250, L = 52, B = 26, T = 10, R = 10;
+  const pts = hist.map(h => ({ d: h.fecha, v: h.consumo, k: "h" })).concat(fc.map(f => ({ d: f.fecha, v: f.consumo_predicho, b: f.linea_base, k: "f" })));
+  const max = Math.max(...pts.map(p => Math.max(p.v, p.b || 0))) * 1.1 || 1;
+  const x = i => L + i * (W - L - R) / (pts.length - 1);
+  const y = v => T + (H - T - B) * (1 - v / max);
+  const line = (arr, key, color, dash) => `<polyline fill="none" stroke="${color}" stroke-width="2" ${dash ? 'stroke-dasharray="4 3"' : ""} points="${arr.map(p => x(p.i) + "," + y(p[key])).join(" ")}"/>`;
+  pts.forEach((p, i) => p.i = i);
+  const h = pts.filter(p => p.k === "h"), f = pts.filter(p => p.k === "f");
+  const joint = [h[h.length - 1]].concat(f);
+  let grid = "";
+  for (let k = 0; k <= 4; k++) { const v = max * k / 4; grid += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#eef0f2"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${fmt(v)}</text>`; }
+  const ticks = pts.filter((p, i) => i % 7 === 0 || i === pts.length - 1).map(p => `<text x="${x(p.i)}" y="${H - 6}" text-anchor="middle">${p.d.slice(5)}</text>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Historial y pronóstico">
+    ${grid}${ticks}
+    <rect x="${x(f[0].i) - 4}" y="${T}" width="${W - R - x(f[0].i) + 4}" height="${H - T - B}" fill="#1f6f8b" opacity=".06"/>
+    ${line(h, "v", "#1d2731")}
+    ${line(f, "b", "#9aa5b1", true)}
+    ${line(joint, "v", "#1f6f8b")}
+    <text x="${L + 4}" y="${T + 12}">Historial (negro) · LightGBM (azul) · Línea base (gris) · ${unit}</text>
+  </svg>`;
+}
+
+// Optional URL parameters to reproduce a case (used for the report screenshots):
+// ?insumo=Harina&hasta=2026-09-26&stock=0&horizonte=14&entrega=3&run=1
+async function fromUrl() {
+  const q = new URLSearchParams(location.search);
+  if (!q.has("insumo")) return;
+  $("item").value = q.get("insumo");
+  $("item").onchange();
+  if (q.has("hasta")) $("until").value = q.get("hasta");
+  if (q.has("horizonte")) $("horizon").value = q.get("horizonte");
+  if (q.has("entrega")) $("lead").value = q.get("entrega");
+  if (q.has("historial")) { $("hist").value = q.get("historial").split("|").join("\n"); }
+  else { await $("load").onclick(); }
+  if (q.has("stock")) $("stock").value = q.get("stock");
+  if (q.get("run") === "1") await $("run").onclick();
+}
+
+init().then(fromUrl);
+</script>
+</body>
+</html>
