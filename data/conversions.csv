@@ -1,0 +1,8 @@
+from_unit,to_unit,factor
+kg,g,1000.00
+l,ml,1000.00
+b500,g,500.00
+mp30,und,30.00
+pq12,und,12.00
+c250,g,250.00
+ml20,und,20.00

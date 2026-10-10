@@ -1,0 +1,51 @@
+product_id,name,type,unit,parent_id,stock,stock_min
+54a648ee-439c-4e77-889e-a6d94c56de0b,Croissant bandeja x12,Reventa,pq12,5a97f0b6-9d74-4e9a-b83c-b1b37a4da778,0.00,0.00
+8ab70200-c44d-4482-a29d-342bb6e01078,Naranja,Insumo,und,,21.00,20.00
+fa57601c-8e6f-4779-8468-bdc04b2c4f6e,Tomate 1 kg,Insumo,kg,70be8bf2-20b2-48c6-a1a5-cceddfc8d9a0,0.00,0.00
+ae7c2ad1-1e0d-49d2-a1ba-a8b7b8a54e42,Naranja malla x20,Insumo,ml20,8ab70200-c44d-4482-a29d-342bb6e01078,0.00,0.00
+70be8bf2-20b2-48c6-a1a5-cceddfc8d9a0,Tomate,Insumo,g,,400.00,300.00
+65a7eee7-31f9-4b1c-b82d-f32745af4d03,Te en hojas caja 250 g,Insumo,c250,8c187566-8a2a-4a89-9bac-b8d15eb316ce,0.00,0.00
+37bc0db9-9d35-4d57-a153-75adac849589,Crema de leche,Insumo,ml,,880.00,300.00
+2f2509a3-5c12-4998-98f2-cf1e7c7f490e,Crema de leche 1 L,Insumo,l,37bc0db9-9d35-4d57-a153-75adac849589,0.00,0.00
+1724d0e2-e253-4f72-a26d-159f32d19591,Agua con gas 500 ml,Reventa,und,,0.00,6.00
+70d12a7e-d683-4c60-b834-ad1a70491dbd,Te frio 500 ml,Reventa,und,,8.00,6.00
+bada4a69-b4b5-4508-ae28-9464895b5c2c,Brownie de chocolate,Producto elaborado,und,,15.00,8.00
+12894edf-4946-4c8e-b878-be1d2e8d12f5,Chokolatte,Producto elaborado,und,,0.00,0.00
+8e432348-4d75-410a-9f54-847a57dcc74f,Galletas de mantequilla,Producto elaborado,und,,50.00,10.00
+6d3768f1-c2c5-4e83-b349-5e2ea3b1dd4e,Espresso,Producto elaborado,und,,0.00,0.00
+2cba1026-175c-4fbe-869b-3127730a35e0,Cafe Latte,Producto elaborado,und,,0.00,0.00
+658cdcb1-a7aa-4b2a-be9f-d67d942c65bd,Agua sin gas 500 ml,Reventa,und,,10.00,6.00
+559b889f-06c2-4bc7-a665-c9b9091e6777,Capuchino,Producto elaborado,und,,0.00,0.00
+34e70f18-9769-4776-98ad-f352c4249280,Mocaccino,Producto elaborado,und,,0.00,0.00
+d4f00a75-5a5b-43ff-b1b9-e8130ad54ace,Cafe Americano,Producto elaborado,und,,0.00,0.00
+9270ced8-6715-4378-a541-581039451edf,Te caliente,Producto elaborado,und,,0.00,0.00
+a12139dd-f835-4d94-9abc-61fb76c5fe0b,Frappuccino,Producto elaborado,und,,0.00,0.00
+af7be4fe-3433-4f4a-9d25-ad6b8da397bb,Harina,Insumo,g,,1054.00,500.00
+1e5e0382-8c37-4e29-a578-8756f275f678,Cafe en grano,Insumo,g,,979.00,500.00
+e59bde5b-9393-483e-a8b6-9fd58684f840,Chocolate en polvo,Insumo,g,,925.00,300.00
+4674cfc8-6be1-4acb-9151-86e633edfd94,Azucar blanca,Insumo,g,,998.00,500.00
+a6483341-6ffe-4883-ab73-68e73d081390,Leche entera,Insumo,ml,,461.00,2000.00
+c06d9630-36a3-4099-b363-6e6258776ece,Mantequilla,Insumo,g,,980.00,200.00
+a77a9351-bbd3-4c26-ab35-ba3428edff0c,Jamon,Insumo,g,,470.00,200.00
+6a723bfa-a343-4951-aa5c-398d1b1ba424,Huevo,Insumo,und,,2.00,6.00
+93cd7f3f-1b0a-4a67-9d67-a171f4e762ee,Pan de molde,Insumo,g,,40.00,250.00
+4c917417-2b18-4a75-86ec-8aaf949cfde6,Queso,Insumo,g,,960.00,200.00
+6b836b76-6d2d-4ddd-937b-d459c3bce27d,Cafe en grano bolsa 1 kg,Insumo,kg,1e5e0382-8c37-4e29-a578-8756f275f678,0.00,0.00
+7018661a-6043-418a-9fe4-88d5ea08c753,Leche Pil 1 L,Insumo,l,a6483341-6ffe-4883-ab73-68e73d081390,0.00,0.00
+7f692920-d827-41f5-bfa4-ef74b5276857,Leche Prolac 1 L,Insumo,l,a6483341-6ffe-4883-ab73-68e73d081390,0.00,0.00
+146a0376-9657-4fae-894e-e1c2d6ed0795,Chocolate en polvo bolsa 1 kg,Insumo,kg,e59bde5b-9393-483e-a8b6-9fd58684f840,0.00,0.00
+612a5d3a-418e-4087-b84f-6660e18971e1,Azucar blanca bolsa 1 kg,Insumo,kg,4674cfc8-6be1-4acb-9151-86e633edfd94,0.00,0.00
+c20dc4a9-d46b-438b-b538-bd88cbaccd1d,Harina bolsa 1 kg,Insumo,kg,af7be4fe-3433-4f4a-9d25-ad6b8da397bb,0.00,0.00
+429a080c-e617-4962-a261-f03350e9d216,Mantequilla 1 kg,Insumo,kg,c06d9630-36a3-4099-b363-6e6258776ece,0.00,0.00
+0dfc6b3b-816e-492a-a8a0-a116a7bad227,Huevo maple x30,Insumo,mp30,6a723bfa-a343-4951-aa5c-398d1b1ba424,0.00,0.00
+de08648e-b0b5-4cf0-94eb-b20fc3a0a6b3,Pan de molde bolsa 500 g,Insumo,b500,93cd7f3f-1b0a-4a67-9d67-a171f4e762ee,0.00,0.00
+b1ab36c0-124b-416f-8040-d3d9c604dcbe,Sandwich Mixto,Producto elaborado,und,,0.00,0.00
+76928e6d-d217-49f1-9a78-98e4d9296389,Sandwich Napolitano,Producto elaborado,und,,0.00,0.00
+685baae3-8095-4335-9e8a-ebf962381f41,Jugo de naranja natural,Producto elaborado,und,,0.00,0.00
+5a97f0b6-9d74-4e9a-b83c-b1b37a4da778,Croissant,Reventa,und,,7.00,6.00
+02f02aeb-fe76-496d-9319-8aa953ac9518,Jamon El Tejar 1 kg,Insumo,kg,a77a9351-bbd3-4c26-ab35-ba3428edff0c,0.00,0.00
+44e6bcf8-9d1e-42df-a79c-2ccf99e2c365,Queso criollo 1 kg,Insumo,kg,4c917417-2b18-4a75-86ec-8aaf949cfde6,0.00,0.00
+b44a95fb-11e5-4400-ab65-3c019f052a4a,Agua sin gas paquete x12,Reventa,pq12,658cdcb1-a7aa-4b2a-be9f-d67d942c65bd,0.00,0.00
+ee88ab66-702b-4ae9-91fb-1efc0f2e1e77,Agua con gas paquete x12,Reventa,pq12,1724d0e2-e253-4f72-a26d-159f32d19591,0.00,0.00
+9a181978-e679-4ca6-b469-ef31fc661115,Te frio paquete x12,Reventa,pq12,70d12a7e-d683-4c60-b834-ad1a70491dbd,0.00,0.00
+8c187566-8a2a-4a89-9bac-b8d15eb316ce,Te en hojas,Insumo,g,,202.00,50.00
