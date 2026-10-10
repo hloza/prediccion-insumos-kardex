@@ -1,0 +1,84 @@
+{
+  "split": {
+    "train": [
+      "2021-10-29",
+      "2025-06-30"
+    ],
+    "validation": [
+      "2025-07-01",
+      "2025-12-31"
+    ],
+    "test": [
+      "2026-01-01",
+      "2026-10-03"
+    ],
+    "rows": {
+      "train": 18774,
+      "validation": 2576,
+      "test": 3864
+    }
+  },
+  "selection_on_validation": {
+    "regression": {
+      "val_mase": 0.9468,
+      "iterations": 512
+    },
+    "regression_l1": {
+      "val_mase": 0.9344,
+      "iterations": 1136
+    },
+    "tweedie": {
+      "val_mase": 0.9342,
+      "iterations": 679
+    }
+  },
+  "chosen_objective": "tweedie",
+  "test_model": {
+    "mase_mean": 0.9343,
+    "mase_median": 0.7959,
+    "wape_mean": 0.4454,
+    "bias_mean": -0.096,
+    "weekly_wape_mean": 0.1885,
+    "zero_day_mae_scaled": 0.6389
+  },
+  "test_baseline": {
+    "mase_mean": 1.3234,
+    "mase_median": 1.1533,
+    "wape_mean": 0.6357,
+    "bias_mean": -0.0099,
+    "weekly_wape_mean": 0.2088,
+    "zero_day_mae_scaled": 1.0528
+  },
+  "items_where_model_wins": 14,
+  "items_total": 14,
+  "error_by_dow_scaled": {
+    "abs_err_model": {
+      "0": 0.576,
+      "1": 0.579,
+      "2": 0.561,
+      "3": 0.649,
+      "4": 0.569,
+      "5": 0.684,
+      "6": 0.484
+    },
+    "abs_err_base": {
+      "0": 0.846,
+      "1": 0.886,
+      "2": 0.696,
+      "3": 0.863,
+      "4": 0.865,
+      "5": 0.954,
+      "6": 0.718
+    }
+  },
+  "error_holiday_scaled": {
+    "abs_err_model": {
+      "0": 0.59,
+      "1": 0.498
+    },
+    "abs_err_base": {
+      "0": 0.83,
+      "1": 0.919
+    }
+  }
+}
